@@ -1,0 +1,82 @@
+{
+  "root": true,
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "globals": { "require": true, "process": true, "module": true, "__dirname": true },
+  "extends": [
+    "eslint:recommended",
+    "plugin:n/recommended",
+    "eslint-config-metarhia",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": ["import", "prettier"],
+  "parserOptions": {
+    "requireConfigFile": false,
+    "sourceType": "module",
+    "ecmaVersion": "latest",
+    "ecmaFeatures": {
+      "impliedStrict": true
+    }
+  },
+
+  "rules": {
+    // we should always disable debugging and warn console logs
+    "no-debugger": 2,
+    "no-console": 1,
+
+    "prettier/prettier": "error",
+    "n/exports-style": ["error", "module.exports"],
+    "n/file-extension-in-import": ["error", "always"],
+    "n/prefer-global/buffer": ["error", "always"],
+    "n/prefer-global/console": ["error", "always"],
+    "n/prefer-global/process": ["error", "always"],
+    "n/prefer-global/url-search-params": ["error", "always"],
+    "n/prefer-global/url": ["error", "always"],
+    "n/prefer-promises/dns": "error",
+    "n/no-missing-require": ["warn"],
+    "n/prefer-promises/fs": "error",
+    "no-use-before-define": ["error", { "functions": false }],
+
+    "import/no-useless-path-segments": [
+      "error",
+      {
+        "noUselessIndex": true
+      }
+    ],
+    "import/no-cycle": "error",
+    "import/no-self-import": "error",
+    "import/extensions": "off",
+    "import/no-unresolved": [2, { "commonjs": true, "ignore": ["^~"] }],
+
+    "no-restricted-syntax": ["error", "LabeledStatement", "ForInStatement", "WithStatement"],
+    "no-underscore-dangle": 0,
+    "new-cap": "off",
+    "class-methods-use-this": 0,
+    "max-classes-per-file": ["error", 7],
+    "no-param-reassign": ["error", { "props": false }],
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "consistent-return": "off",
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "always-multiline",
+        "exports": "always-multiline",
+        "functions": "never",
+        "imports": "always-multiline",
+        "objects": "always-multiline"
+      }
+    ],
+    "semi": ["error", "always"],
+
+    "padding-line-between-statements": [
+      "error",
+      { "blankLine": "always", "prev": "*", "next": "return" },
+      { "blankLine": "always", "prev": "*", "next": "function" },
+      { "blankLine": "always", "prev": "function", "next": "*" }
+    ]
+  },
+
+  "ignorePatterns": ["/**/node_modules/*", "./*"]
+}

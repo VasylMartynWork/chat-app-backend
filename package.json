@@ -1,0 +1,26 @@
+{
+  "name": "chat-app-backend",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js"
+  },
+  "author": "Vaspers",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "2.8.5",
+    "dotenv": "16.4.5",
+    "express": "4.19.2",
+    "express-async-errors": "3.1.1"
+  },
+  "devDependencies": {
+    "eslint": "8.53.0",
+    "eslint-config-metarhia": "8.2.2",
+    "eslint-config-prettier": "9.0.0",
+    "eslint-plugin-import": "2.29.1",
+    "eslint-plugin-n": "16.0.0",
+    "eslint-plugin-prettier": "5.0.1",
+    "nodemon": "3.1.0",
+    "prettier": "3.2.5"
+  }
+}
