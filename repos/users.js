@@ -7,6 +7,10 @@ const findUserById = async (userId) => {
   return await usersDb.findOne({ _id: ObjectId.createFromHexString(userId) });
 };
 
+const findUserByUsername = async (username) => {
+  return await usersDb.findOne({ username });
+};
+
 const findAllUsers = async () => {
   return await usersDb.find().toArray();
 };
@@ -17,6 +21,7 @@ const saveUser = async (newUserData) => {
 
 module.exports.UserRepo = {
   findUserById,
+  findUserByUsername,
   findAllUsers,
   saveUser,
   validateObjectId: ObjectId.isValid,
