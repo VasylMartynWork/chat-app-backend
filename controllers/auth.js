@@ -1,14 +1,14 @@
-const { UserRepo } = require('../repos/users');
+const { UserRepo } = require('../repos/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 /**
  * @type {import('express').RequestHandler}
  */
-const authorize = async (req, res) => {
-  const { login, password } = req.body;
+const signIn = async (req, res) => {
+  const { username, password } = req.body;
 
-  const user = await UserRepo.findUserByUsername(login);
+  const user = await UserRepo.findUserByUsername(username);
 
   if (!user) {
     return res.sendStatus(500);
@@ -33,13 +33,13 @@ const authorize = async (req, res) => {
 /**
  * @type {import('express').RequestHandler}
  */
-const register = async (req, res) => {
-  const { login, password } = req.body;
+const signUp = async (req, res) => {
+  const { username, password } = req.body;
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const savedUser = await UserRepo.saveUser({
-    username: login,
+    username,
     password: hashedPassword,
   });
 
@@ -77,6 +77,6 @@ const updateTask = async (req, res, next) => {
 };
 
 module.exports = {
-  authorize,
-  register,
+  signIn,
+  signUp,
 };
