@@ -1,14 +1,24 @@
 const WebSocket = require('ws');
-const redis = require('../adapters/redis');
+const room = require('../repos/room');
 
 const wss = new WebSocket.Server({ port: 3003 });
 
 wss.on('connection', async (ws) => {
-  const rooms = await redis.scan('0', 'MATCH', 'PublicRoom-*');
+  const rooms = await room.getRooms();
 
   const roomData = { type: 'sendRooms', rooms: rooms[1] };
 
   ws.send(JSON.stringify(roomData));
+
+  ws.on('message', async (message) => {
+    const data = JSON.parse(message.toString());
+
+    if (data.type === 'joinRoom') {
+      wss.clients.forEach((client) => {
+        client.send(JSON.stringify({ type: 'roomJoined' }));
+      });
+    }
+  });
   //   rooms[1].forEach((room) => {
   // 	ws.send(room);
   //   });
