@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
  */
 const signIn = async (req, res) => {
   const { username, password } = req.body;
+  // TODO: додай валідацію на реєстрацію і авторизацію
 
   const user = await UserRepo.findUserByUsername(username);
 
@@ -27,7 +28,7 @@ const signIn = async (req, res) => {
     sameSite: 'lax',
   });
 
-  res.sendStatus(200);
+  res.status(200).send({ userId: user._id.toString() });
 };
 
 /**
