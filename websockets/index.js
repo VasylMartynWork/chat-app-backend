@@ -19,10 +19,11 @@ wss.on('connection', async (ws, req) => {
   ws.on('message', async (message) => {
     const data = JSON.parse(message.toString());
 
+    // @ts-ignore
+    const userId = ws.userId;
+
     if (data.type === 'joinRoom') {
       const roomName = data.room;
-      // @ts-ignore
-      const userId = ws.userId;
 
       const user = await UserRepo.findUserById(userId);
 
@@ -40,10 +41,27 @@ wss.on('connection', async (ws, req) => {
           }
         });
       });
+    } else if (data.type === 'sendMessage') {
+      const roomName = data.room;
 
-      //   wss.clients.forEach((client) => {
-      //     client.send(JSON.stringify({ type: 'roomJoined' }));
-      //   });
+      const user = await UserRepo.findUserById(userId);
+
+      const usersInRoom = await room.getUsersInRoom(roomName);
+
+      usersInRoom.forEach((userId) => {
+        wss.clients.forEach((client) => {
+          // @ts-ignore
+          if (client.userId === userId) {
+            client.send(
+              JSON.stringify({
+                type: 'messageSent',
+                user: user.username,
+                message: data.message,
+              }),
+            );
+          }
+        });
+      });
     }
   });
   //   rooms[1].forEach((room) => {
