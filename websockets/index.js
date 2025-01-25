@@ -62,6 +62,25 @@ wss.on('connection', async (ws, req) => {
           }
         });
       });
+    } else if (data.type === 'createRoom') {
+      const roomName = data.roomName;
+
+      const isRoomExist = await room.isRoomExist(roomName);
+
+      if (isRoomExist) {
+        ws.send(JSON.stringify({ type: 'roomExist' }));
+
+        return;
+      }
+
+      await room.createRoom(roomName, userId);
+
+      ws.send(
+        JSON.stringify({
+          type: 'roomCreated',
+          roomName: `PublicRoom-${roomName}`,
+        }),
+      );
     }
   });
   //   rooms[1].forEach((room) => {
