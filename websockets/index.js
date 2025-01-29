@@ -27,40 +27,65 @@ wss.on('connection', async (ws, req) => {
 
       const user = await UserRepo.findUserById(userId);
 
-      const usersInRoom = await room.getUsersInRoom(fullRoomName);
+      await room.addUserToRoom(fullRoomName, user.username);
 
-      await room.addUserToRoom(fullRoomName, userId, user.username);
+      // @ts-ignore
+      ws.room = fullRoomName;
 
-      usersInRoom.forEach((userId) => {
-        wss.clients.forEach((client) => {
-          // @ts-ignore
-          if (client.userId === userId) {
-            client.send(
-              JSON.stringify({ type: 'userJoined', user: user.username }),
-            );
-          }
-        });
+      wss.clients.forEach((client) => {
+        // @ts-ignore
+        if (client.room === fullRoomName) {
+          client.send(
+            JSON.stringify({ type: 'userJoined', user: user.username }),
+          );
+        }
       });
-    } else if (data.type === 'sendMessage') {
-      const roomName = data.room;
+    } else if (data.type === 'changeRoom') {
+      const fullRoomName = data.room;
+
+      // @ts-ignore
+      const oldRoom = ws.room;
 
       const user = await UserRepo.findUserById(userId);
 
-      const usersInRoom = await room.getUsersInRoom(roomName);
+      await room.removeUserFromRoom(oldRoom, user.username);
 
-      usersInRoom.forEach((userId) => {
-        wss.clients.forEach((client) => {
-          // @ts-ignore
-          if (client.userId === userId) {
-            client.send(
-              JSON.stringify({
-                type: 'messageSent',
-                user: user.username,
-                message: data.message,
-              }),
-            );
-          }
-        });
+      await room.addUserToRoom(fullRoomName, user.username);
+
+      // @ts-ignore
+      ws.room = fullRoomName;
+
+      wss.clients.forEach((client) => {
+        // @ts-ignore
+        if (client.room === oldRoom) {
+          client.send(
+            JSON.stringify({ type: 'userLeft', user: user.username }),
+          );
+        }
+
+        // @ts-ignore
+        if (client.room === fullRoomName) {
+          client.send(
+            JSON.stringify({ type: 'userJoined', user: user.username }),
+          );
+        }
+      });
+    } else if (data.type === 'sendMessage') {
+      const fullRoomName = data.room;
+
+      const user = await UserRepo.findUserById(userId);
+
+      wss.clients.forEach((client) => {
+        // @ts-ignore
+        if (client.room === fullRoomName) {
+          client.send(
+            JSON.stringify({
+              type: 'messageSent',
+              user: user.username,
+              message: data.message,
+            }),
+          );
+        }
       });
     } else if (data.type === 'createRoom') {
       const roomName = data.roomName;
@@ -83,17 +108,24 @@ wss.on('connection', async (ws, req) => {
       );
     }
   });
-  //   rooms[1].forEach((room) => {
-  // 	ws.send(room);
-  //   });
 
-  //   ws.on('message', async (message) => {
-  // 	const { room, message: msg } = JSON.parse(message);
+  ws.on('close', async () => {
+    // @ts-ignore
+    const fullRoomName = ws.room;
 
-  // 	await redis.publish(room, msg);
-  //   });
+    if (fullRoomName) {
+      const user = await UserRepo.findUserById(userId);
 
-  //   redis.set('users');
+      await room.removeUserFromRoom(fullRoomName, user.username);
 
-  //   redis.set('users');
+      wss.clients.forEach((client) => {
+        // @ts-ignore
+        if ((client.room = fullRoomName)) {
+          client.send(
+            JSON.stringify({ type: 'userLeft', user: user.username }),
+          );
+        }
+      });
+    }
+  });
 });
