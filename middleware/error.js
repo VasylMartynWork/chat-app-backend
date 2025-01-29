@@ -3,6 +3,7 @@
  */
 const errorHandler = async (error, req, res, _) => {
   console.error(error);
+
   return res.sendStatus(500);
 };
 

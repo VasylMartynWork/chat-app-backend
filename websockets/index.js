@@ -23,13 +23,13 @@ wss.on('connection', async (ws, req) => {
     const userId = ws.userId;
 
     if (data.type === 'joinRoom') {
-      const roomName = data.room;
+      const fullRoomName = data.room;
 
       const user = await UserRepo.findUserById(userId);
 
-      const usersInRoom = await room.getUsersInRoom(roomName);
+      const usersInRoom = await room.getUsersInRoom(fullRoomName);
 
-      await room.addUserToRoom(roomName, userId);
+      await room.addUserToRoom(fullRoomName, userId, user.username);
 
       usersInRoom.forEach((userId) => {
         wss.clients.forEach((client) => {

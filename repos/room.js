@@ -5,15 +5,36 @@ const getRooms = async () => {
 };
 
 const createRoom = async (roomName, userId) => {
-  return await redis.sadd(`PublicRoom-${roomName}`, userId);
+  const roomData = {
+    users: [],
+    messages: [],
+    usersOnline: 0,
+    owner: userId,
+  };
+
+  return await redis.set(`PublicRoom-${roomName}`, JSON.stringify(roomData));
 };
 
-const addUserToRoom = async (room, userId) => {
-  return await redis.sadd(room, userId);
+const addUserToRoom = async (fullRoomName, userId, username) => {
+  const roomDataJson = await redis.get(fullRoomName);
+
+  const roomData = JSON.parse(roomDataJson);
+
+  roomData.users.push(userId);
+
+  roomData.messages.push({ content: `${username} has joined to the room` });
+
+  roomData.usersOnline += 1;
+
+  return await redis.set(fullRoomName, JSON.stringify(roomData));
 };
 
-const getUsersInRoom = async (room) => {
-  return await redis.smembers(room);
+const getUsersInRoom = async (fullRoomName) => {
+  const roomDataJson = await redis.get(fullRoomName);
+
+  const roomData = JSON.parse(roomDataJson);
+
+  return roomData.users;
 };
 
 const isRoomExist = async (roomName) => {
