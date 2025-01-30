@@ -23,7 +23,9 @@ const addUserToRoom = async (fullRoomName, username) => {
 
   roomData.usersOnline += 1;
 
-  return await redis.set(fullRoomName, JSON.stringify(roomData));
+  await redis.set(fullRoomName, JSON.stringify(roomData));
+
+  return roomData;
 };
 
 const removeUserFromRoom = async (fullRoomName, username) => {
@@ -35,7 +37,9 @@ const removeUserFromRoom = async (fullRoomName, username) => {
 
   roomData.usersOnline -= 1;
 
-  return await redis.set(fullRoomName, JSON.stringify(roomData));
+  await redis.set(fullRoomName, JSON.stringify(roomData));
+
+  return roomData;
 };
 
 const isRoomExist = async (roomName) => {
